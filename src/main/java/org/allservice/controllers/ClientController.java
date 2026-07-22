@@ -1,0 +1,59 @@
+package org.allservice.controllers;
+
+import org.allservice.dto.request.ClientRequestDTO;
+import org.allservice.dto.response.ClientListResponseDTO;
+import org.allservice.dto.response.ClienteResponseDTO;
+import org.allservice.dto.response.CreateClientResponseDTO;
+import org.allservice.dto.response.UpdateClientResponseDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.allservice.service.ClientService;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/clients")
+public class ClientController {
+
+    private final ClientService clientService;
+
+    public ClientController(ClientService clientService) {
+        this.clientService = clientService;
+    }
+
+    @PostMapping
+    public ResponseEntity<CreateClientResponseDTO> cadastrar(@RequestBody ClientRequestDTO dto) {
+        CreateClientResponseDTO response = clientService.cadastrarClient(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<ClientListResponseDTO>> listarTodos(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "id") String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        Page<ClientListResponseDTO> clientes = clientService.listarTodosClientes(pageable);
+        return ResponseEntity.ok(clientes);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ClienteResponseDTO> buscarPorId(@PathVariable Long id) {
+        ClienteResponseDTO clienteResponseDTO = clientService.buscarPorId(id);
+        return ResponseEntity.ok(clienteResponseDTO);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UpdateClientResponseDTO> atualizar(@PathVariable Long id, @RequestBody ClientRequestDTO dto) {
+        UpdateClientResponseDTO response = clientService.atualizarCliente(id, dto);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+        clientService.deletarCliente(id);
+        return ResponseEntity.noContent().build();
+    }
+}
