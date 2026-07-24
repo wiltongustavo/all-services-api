@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import org.allservice.enums.OrderStatus;
 
 import java.util.List;
 
@@ -16,6 +17,9 @@ public record OrderRequestDTO(@NotNull(message = "O ID do cliente é obrigatóri
                               String name,
 
                               String description,
+
+                              @NotNull(message = "O status do pedido é obrigatório.")
+                              OrderStatus status,
 
                               @NotEmpty(message = "O pedido deve conter pelo menos um produto.")
                               @Valid //

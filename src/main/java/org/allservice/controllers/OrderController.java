@@ -1,6 +1,10 @@
 package org.allservice.controllers;
 
+import org.allservice.dto.request.OrderRequestDTO;
 import org.allservice.dto.response.OrderResponseDTO;
+import org.allservice.enums.OrderStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +23,7 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<OrderResponseDTO> criarOrdem(@RequestBody OrderResponseDTO dto) {
+    public ResponseEntity<OrderResponseDTO> criarOrdem(@RequestBody OrderRequestDTO dto) {
         OrderResponseDTO response = orderService.criarOrdemServico(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -31,13 +35,13 @@ public class OrderController {
     }
 
     @GetMapping
-    public ResponseEntity<List<OrderResponseDTO>> listarTodas() {
-        List<OrderResponseDTO> response = orderService.listAllOrderService();
+    public ResponseEntity<Page<OrderResponseDTO>> listarTodas(Pageable pageable) {
+        Page<OrderResponseDTO> response = orderService.listAllOrderService(pageable);
         return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/{id}/status")
-    public ResponseEntity<OrderResponseDTO> atualizarStatus(@PathVariable Long id, @RequestParam String status) {
+    public ResponseEntity<OrderResponseDTO> atualizarStatus(@PathVariable Long id, @RequestParam OrderStatus status) {
         OrderResponseDTO response = orderService.atualizarStatus(id, status);
         return ResponseEntity.ok(response);
     }

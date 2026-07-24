@@ -56,4 +56,18 @@ public class ClientController {
         clientService.deletarCliente(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<Page<ClientListResponseDTO>> listarOuFiltrarClientes(
+            @RequestParam(required = false, defaultValue = "") String name,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        Page<ClientListResponseDTO> response = clientService.searchClients(name, pageable);
+
+        return ResponseEntity.ok(response);
+    }
+
 }

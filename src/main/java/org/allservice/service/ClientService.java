@@ -147,4 +147,20 @@ public class ClientService {
                 client.getCreateAt()
         ));
     }
+
+    @Transactional(readOnly = true)
+    public Page<ClientListResponseDTO> searchClients(String name, Pageable pageable) {
+        // Chama o repositório unificado (se o name vier vazio ou nulo, ele traz todos)
+        Page<ClientEntity> clientPage = clientRepository.searchByName(name, pageable);
+
+        // Mapeia cada entidade do Page para o DTO de resposta da listagem
+        return clientPage.map(client -> new ClientListResponseDTO(
+                client.getId(),
+                client.getName(),
+                client.getEmail(),
+                client.getPhone(),
+                client.getDateOfBirth(),
+                client.getCreateAt()
+        ));
+    }
 }

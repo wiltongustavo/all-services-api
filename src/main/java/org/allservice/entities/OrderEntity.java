@@ -1,6 +1,7 @@
 package org.allservice.entities;
 
 import jakarta.persistence.*;
+import org.allservice.enums.OrderStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -24,8 +25,9 @@ public class OrderEntity {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal value;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
-    private String status;
+    private OrderStatus status;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -61,8 +63,8 @@ public class OrderEntity {
     public void setDescription(String description) { this.description = description; }
     public BigDecimal getValue() { return value; }
     public void setValue(BigDecimal value) { this.value = value; }
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public OrderStatus getStatus() { return status; }
+    public void setStatus(OrderStatus status) { this.status = status; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public ClientEntity getClient() { return client; }
     public void setClient(ClientEntity client) { this.client = client; }

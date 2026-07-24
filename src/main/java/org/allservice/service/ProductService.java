@@ -5,6 +5,8 @@ import org.allservice.dto.response.ProductResponseDTO;
 import org.allservice.entities.ProductEntity;
 import org.allservice.exceptions.BusinessException;
 import org.allservice.exceptions.ResourceNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.allservice.repositories.ProductRepository;
@@ -78,21 +80,18 @@ public class ProductService {
         );
     }
 
-    // 3. LISTAR TODOS OS PRODUTOS (HTTP 200)
     @Transactional(readOnly = true)
-    public List<ProductResponseDTO> listarTodosProdutos() {
-        List<ProductEntity> produtos = productRepository.findAll();
+    public Page<ProductResponseDTO> listarTodosProdutos(Pageable pageable) {
+        Page<ProductEntity> produtosPage = productRepository.findAllPaged(pageable);
 
-        return produtos.stream()
-                .map(product -> new ProductResponseDTO(
-                        product.getId(),
-                        product.getName(),
-                        product.getDescription(),
-                        product.getValue(),
-                        product.getCreatedAt(),
-                        product.getStock()
-                ))
-                .toList();
+        return produtosPage.map(product -> new ProductResponseDTO(
+                product.getId(),
+                product.getName(),
+                product.getDescription(),
+                product.getValue(),
+                product.getCreatedAt(),
+                product.getStock()
+        ));
     }
 
     // 4. ATUALIZAR PRODUTO (HTTP 200 / 404 / 400)
@@ -116,7 +115,7 @@ public class ProductService {
         product.setName(productDTO.name());
         product.setDescription(productDTO.description());
         product.setValue(productDTO.value());
-        product.setStock(productDTO.stock()); // 👈 Adicionado para atualizar o estoque também
+        product.setStock(productDTO.stock());
 
         ProductEntity productAtualizado = productRepository.save(product);
 
@@ -138,5 +137,19 @@ public class ProductService {
         }
 
         productRepository.deleteById(id);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ProductResponseDTO> searchProducts(String name, Pageable pageable) {
+        Page<ProductEntity> productPage = productRepository.searchByName(name != null ? name : "", pageable);
+
+        return productPage.map(product -> new ProductResponseDTO(
+                product.getId(),
+                product.getName(),
+                product.getDescription(),
+                product.getValue(),
+                product.getCreatedAt(),
+                product.getStock()
+        ));
     }
 }

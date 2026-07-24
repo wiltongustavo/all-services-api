@@ -2,6 +2,10 @@ package org.allservice.controllers;
 
 import org.allservice.dto.request.ProductRequestDTO;
 import org.allservice.dto.response.ProductResponseDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,8 +36,8 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductResponseDTO>> listarTodos() {
-        List<ProductResponseDTO> response = productService.listarTodosProdutos();
+    public ResponseEntity<Page<ProductResponseDTO>> listarTodos(Pageable pageable) {
+        Page<ProductResponseDTO> response = productService.listarTodosProdutos(pageable);
         return ResponseEntity.ok(response);
     }
 
@@ -47,5 +51,18 @@ public class ProductController {
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         productService.deletarProduto(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Page<ProductResponseDTO>> listarOuFiltrarProdutos(
+            @RequestParam(required = false, defaultValue = "") String name,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        Page<ProductResponseDTO> produtos = productService.searchProducts(name, pageable);
+
+        return ResponseEntity.ok(produtos);
     }
 }
