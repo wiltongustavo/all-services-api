@@ -2,11 +2,16 @@ package org.allservice.dto.response;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
-public record CreateClientResponseDTO(Long id,
-                                      String name,
-                                      String email,
-                                      String phone,
-                                      LocalDate dateOfBirth,
-                                      LocalDateTime createAt) {
+public record CreateClientResponseDTO(
+        Long id,
+        String name,
+        String email,
+        String phone,
+        LocalDate dateOfBirth,
+        LocalDateTime createAt,
+        AddressResponseDTO address,
+        List<VehicleResponseDTO> vehicles
+) {
 }

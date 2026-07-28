@@ -1,10 +1,7 @@
 package org.allservice.controllers;
 
 import org.allservice.dto.request.ClientRequestDTO;
-import org.allservice.dto.response.ClientListResponseDTO;
-import org.allservice.dto.response.ClienteResponseDTO;
-import org.allservice.dto.response.CreateClientResponseDTO;
-import org.allservice.dto.response.UpdateClientResponseDTO;
+import org.allservice.dto.response.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -70,4 +67,9 @@ public class ClientController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/{id}/vehicles")
+    public ResponseEntity<List<VehicleResponseDTO>> getVehiclesByClient(@PathVariable Long id) {
+        List<VehicleResponseDTO> vehicles = clientService.findVehiclesByClientId(id);
+        return ResponseEntity.ok(vehicles);
+    }
 }

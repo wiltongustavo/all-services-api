@@ -5,7 +5,9 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "tb_clientes")
@@ -23,21 +25,55 @@ public class ClientEntity {
 
     private String phone;
 
-    @Column(name ="date_of_birth")
+    @Column(nullable = false)
+    private Boolean active;
+
+    @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createAt;
 
-    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
-    private List<OrderEntity> orders = new ArrayList<>();
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<VehicleEntity> vehicles = new HashSet<>();
+
+    @OneToMany(mappedBy = "client")
+    private Set<OrderEntity> orders = new HashSet<>();
+
+    public Set<OrderEntity> getOrders() {
+        return orders;
+    }
+
+    @OneToOne(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
+    private AddressEntity address;
 
     public ClientEntity() {
+    }
+
+    public AddressEntity getAddress() {
+        return address;
+    }
+
+    public void setAddress(AddressEntity address) {
+        this.address = address;
+    }
+
+    public Set<VehicleEntity> getVehicles() {
+        return vehicles;
+    }
+
+    public void setVehicles(Set<VehicleEntity> vehicles) {
+        this.vehicles = vehicles;
+    }
+
+    public void setOrders(Set<OrderEntity> orders) {
+        this.orders = orders;
     }
 
     @PrePersist
     protected void onCreate() {
         this.createAt = LocalDateTime.now();
+        this.active = true;
     }
 
     public String getName() {
@@ -64,6 +100,14 @@ public class ClientEntity {
         this.email = email;
     }
 
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+
     public LocalDate getDateOfBirth() {
         return dateOfBirth;
     }
@@ -72,13 +116,6 @@ public class ClientEntity {
         this.dateOfBirth = dateOfBirth;
     }
 
-    public List<OrderEntity> getOrders() {
-        return orders;
-    }
-
-    public void setOrders(List<OrderEntity> orders) {
-        this.orders = orders;
-    }
 
     public LocalDateTime getCreateAt() {
         return createAt;
@@ -88,11 +125,6 @@ public class ClientEntity {
     public Long getId() {
         return id;
     }
-
-
-
-
-
 
 
 }

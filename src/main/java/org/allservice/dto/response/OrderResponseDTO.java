@@ -12,7 +12,9 @@ public record OrderResponseDTO(
         String description,
         BigDecimal value,
         OrderStatus status,
+        BigDecimal laborValue,
         LocalDateTime createdAt,
         String clientName,
-        List<OrderItemResponseDTO> items
+        List<OrderItemResponseDTO> items,
+        List<ClientPartResponseDTO> clientParts
 ) {}

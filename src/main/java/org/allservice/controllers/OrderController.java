@@ -1,6 +1,7 @@
 package org.allservice.controllers;
 
 import org.allservice.dto.request.OrderRequestDTO;
+import org.allservice.dto.response.OrderSummaryResponseDTO;
 import org.allservice.dto.response.OrderResponseDTO;
 import org.allservice.enums.OrderStatus;
 import org.springframework.data.domain.Page;
@@ -35,8 +36,8 @@ public class OrderController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<OrderResponseDTO>> listarTodas(Pageable pageable) {
-        Page<OrderResponseDTO> response = orderService.listAllOrderService(pageable);
+    public ResponseEntity<Page<OrderSummaryResponseDTO>> listarTodas(Pageable pageable) {
+        Page<OrderSummaryResponseDTO> response = orderService.listarResumoOrdens(pageable);
         return ResponseEntity.ok(response);
     }
 
@@ -50,5 +51,11 @@ public class OrderController {
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         orderService.deletarOrdemServico(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/vehicle/{vehicleId}")
+    public ResponseEntity<List<OrderResponseDTO>> getOrdersByVehicle(@PathVariable Long vehicleId) {
+        List<OrderResponseDTO> orders = orderService.getOrdersByVehicleId(vehicleId);
+        return ResponseEntity.ok(orders);
     }
 }

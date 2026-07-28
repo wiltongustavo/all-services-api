@@ -16,12 +16,20 @@ public interface ClientRepository extends JpaRepository<ClientEntity, Long> {
 
     Optional<ClientEntity> findByEmail(String email);
 
+    // Adicionado "address" e "vehicles" no EntityGraph para carregar tudo junto na listagem paginada
     @Override
-    @EntityGraph(attributePaths = {"orders"})
+    @EntityGraph(attributePaths = {"orders", "address", "vehicles"})
     Page<ClientEntity> findAll(Pageable pageable);
 
-    @EntityGraph(attributePaths = {"orders"})
+    // Adicionado "address" e "vehicles" aqui também para a busca por nome
+    @EntityGraph(attributePaths = {"orders", "address", "vehicles"})
     @Query(value = "SELECT DISTINCT c FROM ClientEntity c LEFT JOIN c.orders o WHERE (:name IS NULL OR :name = '' OR LOWER(c.name) LIKE LOWER(CONCAT('%', :name, '%')))",
             countQuery = "SELECT COUNT(DISTINCT c) FROM ClientEntity c WHERE (:name IS NULL OR :name = '' OR LOWER(c.name) LIKE LOWER(CONCAT('%', :name, '%')))")
     Page<ClientEntity> searchByName(@Param("name") String name, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"orders", "orders.items", "orders.items.product", "vehicles", "address"})
+    Optional<ClientEntity> findWithDetailsById(Long id);
+
+    @Query("SELECT c FROM ClientEntity c LEFT JOIN FETCH c.vehicles WHERE c.id = :id")
+    Optional<ClientEntity> findByIdWithVehicles(@Param("id") Long id);
 }
