@@ -36,8 +36,12 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<ProductResponseDTO>> listarTodos(Pageable pageable) {
-        Page<ProductResponseDTO> response = productService.listarTodosProdutos(pageable);
+    public ResponseEntity<Page<ProductResponseDTO>> listarTodos(
+            @RequestParam(required = false) Long id,
+            @RequestParam(required = false) String name,
+            Pageable pageable
+    ) {
+        Page<ProductResponseDTO> response = productService.listarProdutosFiltrados(id, name, pageable);
         return ResponseEntity.ok(response);
     }
 

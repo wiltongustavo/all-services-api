@@ -22,7 +22,7 @@ public class ClientPartEntity {
     private String serialNumber; // Número de série ou Part Number
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "`condition`", nullable = false) // CORRIGIDO AQUI com crases
+    @Column(name = "`condition`", nullable = false)
     private PartCondition condition;
 
     @Column(columnDefinition = "TEXT")
@@ -30,6 +30,17 @@ public class ClientPartEntity {
 
     @Column(name = "declared_value")
     private BigDecimal declaredValue; // Valor estimado (opcional para termo de responsabilidade)
+
+    @Column(name = "is_client_part", nullable = false)
+    private Boolean isClientPart;
+
+    public Boolean getClientPart() {
+        return isClientPart;
+    }
+
+    public void setClientPart(Boolean clientPart) {
+        isClientPart = clientPart;
+    }
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

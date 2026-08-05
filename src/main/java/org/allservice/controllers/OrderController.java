@@ -6,11 +6,13 @@ import org.allservice.dto.response.OrderResponseDTO;
 import org.allservice.enums.OrderStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.allservice.service.OrderService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -36,8 +38,17 @@ public class OrderController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<OrderSummaryResponseDTO>> listarTodas(Pageable pageable) {
-        Page<OrderSummaryResponseDTO> response = orderService.listarResumoOrdens(pageable);
+    public ResponseEntity<Page<OrderSummaryResponseDTO>> listarTodas(
+            @RequestParam(required = false) Long id,
+            @RequestParam(required = false) OrderStatus status,
+            @RequestParam(required = false) String clientName,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            Pageable pageable
+    ) {
+        Page<OrderSummaryResponseDTO> response = orderService.listarResumoOrdens(
+                id, status, clientName, startDate, endDate, pageable
+        );
         return ResponseEntity.ok(response);
     }
 

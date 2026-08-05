@@ -26,7 +26,7 @@ public class OrderEntity {
 
     // Valor total do pedido (Produtos + Mão de obra)
     @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal value;
+    private BigDecimal totalValue;
 
     // Novo campo para armazenar especificamente o valor da mão de obra
     @Column(name = "labor_value", precision = 10, scale = 2)
@@ -38,6 +38,14 @@ public class OrderEntity {
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    public BigDecimal getTotalValue() {
+        return totalValue;
+    }
+
+    public void setTotalValue(BigDecimal totalValue) {
+        this.totalValue = totalValue;
+    }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_id", nullable = false)
@@ -72,8 +80,6 @@ public class OrderEntity {
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
-    public BigDecimal getValue() { return value; }
-    public void setValue(BigDecimal value) { this.value = value; }
 
     public BigDecimal getLaborValue() { return laborValue; }
     public void setLaborValue(BigDecimal laborValue) { this.laborValue = laborValue; }

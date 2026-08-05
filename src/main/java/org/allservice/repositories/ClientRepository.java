@@ -16,10 +16,19 @@ public interface ClientRepository extends JpaRepository<ClientEntity, Long> {
 
     Optional<ClientEntity> findByEmail(String email);
 
-    // Adicionado "address" e "vehicles" no EntityGraph para carregar tudo junto na listagem paginada
-    @Override
     @EntityGraph(attributePaths = {"orders", "address", "vehicles"})
-    Page<ClientEntity> findAll(Pageable pageable);
+    @Query("SELECT DISTINCT c FROM ClientEntity c WHERE " +
+            "(:id IS NULL OR c.id = :id) AND " +
+            "(:name IS NULL OR :name = '' OR LOWER(c.name) LIKE LOWER(CONCAT('%', :name, '%'))) AND " +
+            "(:email IS NULL OR :email = '' OR LOWER(c.email) LIKE LOWER(CONCAT('%', :email, '%'))) AND " +
+            "(:phone IS NULL OR :phone = '' OR LOWER(c.phone) LIKE LOWER(CONCAT('%', :phone, '%')))")
+    Page<ClientEntity> findFilteredClients(
+            @Param("id") Long id,
+            @Param("name") String name,
+            @Param("email") String email,
+            @Param("phone") String phone,
+            Pageable pageable
+    );
 
     // Adicionado "address" e "vehicles" aqui também para a busca por nome
     @EntityGraph(attributePaths = {"orders", "address", "vehicles"})

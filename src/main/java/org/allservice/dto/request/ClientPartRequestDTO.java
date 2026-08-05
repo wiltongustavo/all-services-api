@@ -23,6 +23,9 @@ public record ClientPartRequestDTO(
         @NotNull(message = "A condição da peça é obrigatória.")
         PartCondition condition,
 
+        @NotNull(message = "esse campo e obrigatorio.")
+        Boolean isClientPart,
+
         String description,
 
         @DecimalMin(value = "0.0", inclusive = true, message = "O valor declarado não pode ser negativo.")

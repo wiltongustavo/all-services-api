@@ -10,11 +10,12 @@ public record OrderResponseDTO(
         Long id,
         String name,
         String description,
-        BigDecimal value,
+        BigDecimal totalValue,
         OrderStatus status,
         BigDecimal laborValue,
         LocalDateTime createdAt,
         String clientName,
         List<OrderItemResponseDTO> items,
-        List<ClientPartResponseDTO> clientParts
+        List<ClientPartResponseDTO> clientParts,
+        VehicleResponseDTO vehicle
 ) {}

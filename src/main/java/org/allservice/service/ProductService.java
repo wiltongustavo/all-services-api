@@ -81,8 +81,8 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ProductResponseDTO> listarTodosProdutos(Pageable pageable) {
-        Page<ProductEntity> produtosPage = productRepository.findAllPaged(pageable);
+    public Page<ProductResponseDTO> listarProdutosFiltrados(Long id, String name, Pageable pageable) {
+        Page<ProductEntity> produtosPage = productRepository.findFilteredProducts(id, name, pageable);
 
         return produtosPage.map(product -> new ProductResponseDTO(
                 product.getId(),
@@ -93,7 +93,6 @@ public class ProductService {
                 product.getStock()
         ));
     }
-
     // 4. ATUALIZAR PRODUTO (HTTP 200 / 404 / 400)
     @Transactional
     public ProductResponseDTO atualizarProduto(Long id, ProductRequestDTO productDTO) {

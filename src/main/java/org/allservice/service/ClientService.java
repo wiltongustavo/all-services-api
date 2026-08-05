@@ -2,6 +2,7 @@ package org.allservice.service;
 
 import org.allservice.dto.request.AddressRequestDTO;
 import org.allservice.dto.request.ClientRequestDTO;
+import org.allservice.dto.request.VehicleRequestDTO;
 import org.allservice.dto.response.*;
 import org.allservice.entities.AddressEntity;
 import org.allservice.entities.ClientEntity;
@@ -141,7 +142,6 @@ public class ClientService {
             if (address == null) {
                 address = new AddressEntity();
                 client.setAddress(address);
-
                 address.setClient(client);
             }
             address.setCep(addrDto.cep());
@@ -152,6 +152,27 @@ public class ClientService {
             address.setCity(addrDto.city());
             address.setState(addrDto.state());
         }
+
+        // --- NOVO: Processar a lista de veículos vindos do front-end ---
+        if (clientDTO.vehicles() != null) {
+            for (VehicleRequestDTO vehDto : clientDTO.vehicles()) {
+                // Se o veículo já tem ID, você pode atualizar (caso permita edição deles na mesma tela)
+                // Se vier sem ID (null), significa que é um veículo novo sendo adicionado agora:
+                if (vehDto.id() == null) {
+                    VehicleEntity novoVeiculo = new VehicleEntity();
+                    novoVeiculo.setPlate(vehDto.plate());
+                    novoVeiculo.setBrand(vehDto.brand());
+                    novoVeiculo.setModel(vehDto.model());
+                    novoVeiculo.setYear(vehDto.year());
+                    novoVeiculo.setColor(vehDto.color());
+                    novoVeiculo.setClient(client); // Vincula ao cliente
+
+                    // Adiciona na lista do cliente (garantindo que ocascade salve ou salvando via repositório)
+                    client.getVehicles().add(novoVeiculo);
+                }
+            }
+        }
+        // -------------------------------------------------------------
 
         ClientEntity clientAtualizado = clientRepository.save(client);
 
@@ -166,7 +187,6 @@ public class ClientService {
                 clientAtualizado.getAddress().getState()
         ) : null;
 
-        // Converte VehicleEntity para VehicleResponseDTO usando clientAtualizado
         List<VehicleResponseDTO> vehicleResponses = clientAtualizado.getVehicles().stream().map(v -> new VehicleResponseDTO(
                 v.getId(),
                 v.getPlate(),
@@ -214,20 +234,35 @@ public class ClientService {
                                     part.getSerialNumber(),
                                     part.getCondition(),
                                     part.getDescription(),
+                                    part.getClientPart(),
                                     part.getDeclaredValue()
                             )).toList() : List.of();
+
+                    // Mapeia o veículo vinculado à ordem de serviço
+                    VehicleResponseDTO vehicleDto = null;
+                    if (order.getVehicle() != null) {
+                        vehicleDto = new VehicleResponseDTO(
+                                order.getVehicle().getId(),
+                                order.getVehicle().getPlate(),
+                                order.getVehicle().getBrand(),
+                                order.getVehicle().getModel(),
+                                order.getVehicle().getYear(),
+                                order.getVehicle().getColor()
+                        );
+                    }
 
                     return new OrderResponseDTO(
                             order.getId(),
                             order.getName(),
                             order.getDescription(),
-                            order.getValue(),
+                            order.getTotalValue(),
                             order.getStatus(),
                             order.getLaborValue(),
                             order.getCreatedAt(),
                             client.getName(),
                             itemsDTO,
-                            clientPartsDTO
+                            clientPartsDTO,
+                            vehicleDto // Adicionado aqui para corresponder ao novo construtor
                     );
                 })
                 .toList();
@@ -281,8 +316,14 @@ public class ClientService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ClientListResponseDTO> listarTodosClientes(Pageable pageable) {
-        Page<ClientEntity> paginaClientes = clientRepository.findAll(pageable);
+    public Page<ClientListResponseDTO> listarClientesFiltrados(
+            Long id,
+            String name,
+            String email,
+            String phone,
+            Pageable pageable
+    ) {
+        Page<ClientEntity> paginaClientes = clientRepository.findFilteredClients(id, name, email, phone, pageable);
 
         return paginaClientes.map(client -> new ClientListResponseDTO(
                 client.getId(),

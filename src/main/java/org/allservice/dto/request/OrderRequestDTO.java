@@ -22,10 +22,8 @@ public record OrderRequestDTO(@NotNull(message = "O ID do cliente é obrigatóri
                               @DecimalMin(value = "0.0", inclusive = true, message = "O valor da mão de obra não pode ser negativo.")
                               BigDecimal laborValue,
 
-
-                              @NotNull(message = "O valor total é obrigatório.")
-                              @DecimalMin(value = "0.0", inclusive = false, message = "O valor total deve ser maior que zero.")
-                              BigDecimal totalValue,
+                              @NotNull(message = "A condição da peça é obrigatória.")
+                              Boolean isClientPart,
 
                               Long vehicleId,
 

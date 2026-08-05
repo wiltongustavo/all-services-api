@@ -30,9 +30,20 @@ public class ClientController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<ClientListResponseDTO>> listarTodos(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "id") String sortBy) {
+    public ResponseEntity<Page<ClientListResponseDTO>> listarTodos(
+            @RequestParam(required = false) Long id,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String phone,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy
+    ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
-        Page<ClientListResponseDTO> clientes = clientService.listarTodosClientes(pageable);
+
+        // Chama o método atualizado do service passando os filtros
+        Page<ClientListResponseDTO> clientes = clientService.listarClientesFiltrados(id, name, email, phone, pageable);
+
         return ResponseEntity.ok(clientes);
     }
 

@@ -10,5 +10,6 @@ public record ClientPartResponseDTO(
         String serialNumber,
         PartCondition condition, // O Jackson (@JsonValue) cuida de mandar isso certinho (ex: "NEW")
         String description,
+        Boolean isClientPart,
         BigDecimal declaredValue
 ) {}
